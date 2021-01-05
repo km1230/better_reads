@@ -72,3 +72,4 @@ celerybeat-schedule*
 .-rplugin~
 .ssh*
 .env
+*.env
