@@ -39,7 +39,7 @@ if DEBUG:
 env = Env(**scheme)
 
 # Core
-PROJECT_NAME: str = "goodread"
+PROJECT_NAME: str = "betterreads"
 SECRET_KEY: str = env("SECRET_KEY")
 SITE_URL: str = env("SITE_URL")
 # NOTE: We do not use the axes middleware because we want login attempts to
@@ -71,6 +71,7 @@ AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
 
 INSTALLED_APPS = [
     # Project apps
+    "better_reads.apps.BetterReadsConfig",
     "webapp.apps.WebAppConfig",
     "users.apps.UsersConfig",
     # Our defaults

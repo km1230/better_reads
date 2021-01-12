@@ -1,4 +1,4 @@
-# DJ-GoodReads
+# DJ-BetterReads
 
 
 ## Base Django project

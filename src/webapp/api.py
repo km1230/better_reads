@@ -5,6 +5,7 @@ from django.urls import include, path  # type: ignore
 from rest_framework.routers import DefaultRouter  # type: ignore
 from rest_framework.viewsets import ViewSetMixin  # type: ignore
 
+from better_reads import views as better_reads_views  # type: ignore
 from users import views as user_views  # type: ignore
 
 # Add viewsets here. The first argument is the name and the URL regex
@@ -13,6 +14,11 @@ routes: List[Tuple[str, ViewSetMixin]] = [
     ("sessions", user_views.SessionView),
     ("password-resets", user_views.PasswordResetView),
     ("password-reset-confirmations", user_views.PasswordResetConfirmView),
+    ("books", better_reads_views.BookView),
+    ("categories", better_reads_views.CategoryView),
+    ("shelves", better_reads_views.ShelfView),
+    ("shelfbooks", better_reads_views.ShelfbookView),
+    ("notes", better_reads_views.NoteView),
 ]
 
 v1_router = DefaultRouter()
