@@ -24,6 +24,7 @@ class IsObjectOwner(permissions.BasePermission):
 class BookView(views.ModelViewSet):
     """Book viewset."""
 
+    resource_name = "books"
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [permissions.DjangoModelPermissionsOrAnonReadOnly]
@@ -33,6 +34,7 @@ class BookView(views.ModelViewSet):
 class CategoryView(views.ModelViewSet):
     """Category viewset."""
 
+    resource_name = "categories"
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [permissions.DjangoModelPermissionsOrAnonReadOnly]
@@ -42,6 +44,7 @@ class CategoryView(views.ModelViewSet):
 class ShelfView(views.ModelViewSet):
     """Shelf viewset."""
 
+    resource_name = "shelves"
     queryset = Shelf.objects.all()
     serializer_class = ShelfSerializer
 
@@ -60,6 +63,7 @@ class ShelfView(views.ModelViewSet):
 class ShelfbookView(views.ModelViewSet):
     """Books on shelf."""
 
+    resource_name = "shelfbooks"
     queryset = Shelfbook.objects.all()
     serializer_class = ShelfbookSerializer
     permission_classes = [permissions.IsAuthenticated, IsObjectOwner]
@@ -76,6 +80,7 @@ class ShelfbookView(views.ModelViewSet):
 class ReviewView(views.ModelViewSet):
     """Review viewset."""
 
+    resource_name = "reviews"
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
 
