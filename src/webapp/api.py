@@ -18,7 +18,7 @@ routes: List[Tuple[str, ViewSetMixin]] = [
     ("categories", better_reads_views.CategoryView),
     ("shelves", better_reads_views.ShelfView),
     ("shelfbooks", better_reads_views.ShelfbookView),
-    ("notes", better_reads_views.NoteView),
+    ("reviews", better_reads_views.ReviewView),
 ]
 
 v1_router = DefaultRouter()

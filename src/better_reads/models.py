@@ -42,17 +42,29 @@ class Shelf(models.Model):
     )
     public = models.BooleanField(default=True)
 
+    def is_owner(self, user):
+        """Return whether the user is the owner."""
+        return self.user == user
+
 
 class Shelfbook(models.Model):
-    """extras attributes for books on shelf."""
+    """Book on the shelf."""
 
-    shelf = models.ForeignKey(Shelf, on_delete=models.CASCADE)
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    shelf = models.ForeignKey(
+        to=Shelf, on_delete=models.CASCADE, related_name="shelfbooks"
+    )
+    book = models.ForeignKey(
+        to=Book, on_delete=models.CASCADE, related_name="shelfbooks"
+    )
     options = [("WI", "Wish"), ("RI", "Reading"), ("RD", "Read")]
     status = models.CharField(max_length=2, choices=options, default=("WI"))
 
+    def is_owner(self, user):
+        """Return whether the user is the owner."""
+        return self.shelf.is_owner(user)
 
-class Note(models.Model):
+
+class Review(models.Model):
     """Note created by a user for a book."""
 
     ratings = [(str(x), str(x)) for x in range(1, 6)]

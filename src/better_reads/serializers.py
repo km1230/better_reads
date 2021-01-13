@@ -1,7 +1,7 @@
 """Serializers for better_reads app."""
 from rest_framework_json_api import serializers
 
-from .models import Book, Category, Note, Shelf, Shelfbook
+from .models import Book, Category, Review, Shelf, Shelfbook
 
 
 class BookSerializer(serializers.ModelSerializer):
@@ -31,8 +31,8 @@ class ShelfSerializer(serializers.ModelSerializer):
         """Meta of shelf serializer."""
 
         model = Shelf
-        read_only_fields = ["user"]
-        fields = ["id", "name", "books", "public"] + read_only_fields
+        read_only_fields = ["user", "books"]
+        fields = ["id", "name", "public"] + read_only_fields
 
     def create(self, validated_data):
         """Add request.user upon shelf creation."""
@@ -49,14 +49,22 @@ class ShelfbookSerializer(serializers.ModelSerializer):
         model = Shelfbook
         fields = ["id", "shelf", "book", "status"]
 
+    def validate_shelf(self, shelf):
+        """Validate the requesting user is the owner of the shelf."""
+        if self.context["request"].user != shelf.user:
+            raise serializers.ValidationError(
+                "You have no permission to modify this shelf."
+            )
+        return shelf
 
-class NoteSerializer(serializers.ModelSerializer):
+
+class ReviewSerializer(serializers.ModelSerializer):
     """Notes serializer."""
 
     class Meta:
         """Meta of note serializer."""
 
-        model = Note
+        model = Review
         read_only_fields = ["user"]
         fields = ["id", "rate", "content", "created_at", "book"] + read_only_fields
 

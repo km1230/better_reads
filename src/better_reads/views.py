@@ -3,11 +3,11 @@ from django.db.models import Q
 from rest_framework import generics, permissions
 from rest_framework_json_api import views
 
-from .models import Book, Category, Note, Shelf, Shelfbook
+from .models import Book, Category, Review, Shelf, Shelfbook
 from .serializers import (
     BookSerializer,
     CategorySerializer,
-    NoteSerializer,
+    ReviewSerializer,
     ShelfbookSerializer,
     ShelfSerializer,
 )
@@ -18,7 +18,7 @@ class IsObjectOwner(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         """Detect object owner."""
-        return request.user == obj.user
+        return obj.is_owner(request.user)
 
 
 class BookView(views.ModelViewSet):
@@ -44,11 +44,17 @@ class ShelfView(views.ModelViewSet):
 
     queryset = Shelf.objects.all()
     serializer_class = ShelfSerializer
-    permission_classes = [permissions.IsAuthenticated, IsObjectOwner]
 
     def get_queryset(self):
         """Public or self owned shelves."""
         return super().get_queryset().filter(Q(public=True) | Q(user=self.request.user))
+
+    def get_permissions(self):
+        """Allow authenticated users to list & retrieve (their / public) shelves."""
+        permission_classes = [permissions.IsAuthenticated]
+        if self.action != "retrieve" and self.action != "list":
+            permission_classes.append(IsObjectOwner)
+        return [permissions() for permissions in permission_classes]
 
 
 class ShelfbookView(views.ModelViewSet):
@@ -67,11 +73,11 @@ class ShelfbookView(views.ModelViewSet):
         )
 
 
-class NoteView(views.ModelViewSet):
-    """Note viewset."""
+class ReviewView(views.ModelViewSet):
+    """Review viewset."""
 
-    queryset = Note.objects.all()
-    serializer_class = NoteSerializer
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
 
     def get_permissions(self):
         """Define permission upon actions."""
