@@ -78,7 +78,8 @@ class UserView(
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
-    ordering = ["pk"]
+    ordering = ["id"]
+    search_fields = ["id", "email"]
 
     @sensitive_post_parameters_m
     def dispatch(self, request, *args, **kwargs):
@@ -99,8 +100,8 @@ class UserView(
         """Filter queryset to users based on permissions."""
         qs = super().get_queryset(*args, **kwargs)
         user = self.request.user
-        if not user.is_authenticated:
-            return qs.none()
+        # if not user.is_authenticated:
+        #     return qs.none()
         if self.is_get and not user.has_perm("users.view_user"):
             return qs.filter(pk=user.pk)
         if self.is_update and not user.has_perm("users.change_user"):
@@ -112,6 +113,10 @@ class UserView(
         user = request.user
         if user.is_authenticated and not user.has_perm("users.add_user"):
             self.permission_denied(request, message=_("You cannot create users."))
+        if User.objects.filter(email=request.data["email"]).exists():
+            return Response(
+                [{"detail": "User already exists."}], status=status.HTTP_400_BAD_REQUEST
+            )
         return super().create(request, *args, **kwargs)
 
 

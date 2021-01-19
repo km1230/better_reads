@@ -3,6 +3,7 @@ from datetime import datetime
 
 from django.db import models
 
+from better_reads import objects
 from users.models import User
 
 
@@ -14,6 +15,11 @@ class Category(models.Model):
     def __str__(self):
         """Show shelf name."""
         return self.name
+
+    class JSONAPIMeta:
+        """JSON:API meta information."""
+
+        resource_name = "categories"
 
 
 class Book(models.Model):
@@ -31,6 +37,11 @@ class Book(models.Model):
         """Show book title."""
         return self.title
 
+    class JSONAPIMeta:
+        """JSON:API meta information."""
+
+        resource_name = "books"
+
 
 class Shelf(models.Model):
     """Shelf model owned by each user."""
@@ -46,6 +57,11 @@ class Shelf(models.Model):
         """Return whether the user is the owner."""
         return self.user == user
 
+    class JSONAPIMeta:
+        """JSON:API meta information."""
+
+        resource_name = "shelves"
+
 
 class Shelfbook(models.Model):
     """Book on the shelf."""
@@ -56,12 +72,20 @@ class Shelfbook(models.Model):
     book = models.ForeignKey(
         to=Book, on_delete=models.CASCADE, related_name="shelfbooks"
     )
-    options = [("WI", "Wish"), ("RI", "Reading"), ("RD", "Read")]
-    status = models.CharField(max_length=2, choices=options, default=("WI"))
+    status = models.CharField(
+        max_length=10,
+        choices=objects.ReadStatus.choices(),
+        default=objects.ReadStatus.wish.value,
+    )
 
     def is_owner(self, user):
         """Return whether the user is the owner."""
         return self.shelf.is_owner(user)
+
+    class JSONAPIMeta:
+        """JSON:API meta information."""
+
+        resource_name = "shelfbooks"
 
 
 class Review(models.Model):
@@ -73,3 +97,8 @@ class Review(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name="notes")
     book = models.ForeignKey(to=Book, on_delete=models.CASCADE, related_name="notes")
+
+    class JSONAPIMeta:
+        """JSON:API meta information."""
+
+        resource_name = "reviews"

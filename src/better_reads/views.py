@@ -24,29 +24,27 @@ class IsObjectOwner(permissions.BasePermission):
 class BookView(views.ModelViewSet):
     """Book viewset."""
 
-    resource_name = "books"
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [permissions.DjangoModelPermissionsOrAnonReadOnly]
-    ordering = ["title"]
+    search_fields = ["title", "author", "category__name"]
 
 
 class CategoryView(views.ModelViewSet):
     """Category viewset."""
 
-    resource_name = "categories"
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [permissions.DjangoModelPermissionsOrAnonReadOnly]
-    ordering = ["name"]
+    search_fields = ["name"]
 
 
 class ShelfView(views.ModelViewSet):
     """Shelf viewset."""
 
-    resource_name = "shelves"
     queryset = Shelf.objects.all()
     serializer_class = ShelfSerializer
+    search_fields = ["name"]
 
     def get_queryset(self):
         """Public or self owned shelves."""
@@ -63,10 +61,10 @@ class ShelfView(views.ModelViewSet):
 class ShelfbookView(views.ModelViewSet):
     """Books on shelf."""
 
-    resource_name = "shelfbooks"
     queryset = Shelfbook.objects.all()
     serializer_class = ShelfbookSerializer
     permission_classes = [permissions.IsAuthenticated, IsObjectOwner]
+    search_fields = ["shelf__name", "book__title"]
 
     def get_queryset(self):
         """Public or self owned shelves."""
@@ -80,9 +78,9 @@ class ShelfbookView(views.ModelViewSet):
 class ReviewView(views.ModelViewSet):
     """Review viewset."""
 
-    resource_name = "reviews"
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
+    search_fields = ["book__title", "user__email", "rate"]
 
     def get_permissions(self):
         """Define permission upon actions."""

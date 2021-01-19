@@ -160,7 +160,7 @@ class UserSerializer(serializers.ModelSerializer):
         """Serializer meta information."""
 
         model = User
-        fields = ["email", "password", "current_password"]
+        fields = ["id", "email", "password", "current_password", "is_staff"]
 
     def create(self, validated_data):
         """Create the user with the given email and password."""
@@ -195,6 +195,13 @@ class UserSerializer(serializers.ModelSerializer):
                 if not self.instance.check_password(attrs["current_password"]):
                     msg = _("Your current password is incorrect.")
                     raise ValidationError({"current_password": msg})
+            # only admin can change is_staff attribute
+            if "is_staff" in attrs:
+                if not self.context["request"].user.has_perm("users.change_user"):
+                    attrs.pop("is_staff", None)
+                    raise ValidationError(
+                        {"is_staff": "You are not allowed to change the attribute."}
+                    )
         # validate the password if it is included
         if "password" in attrs:
             self._validate_password(attrs["password"])
