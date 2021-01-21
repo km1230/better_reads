@@ -93,10 +93,14 @@ class Review(models.Model):
 
     ratings = [(str(x), str(x)) for x in range(1, 6)]
     rate = models.CharField(max_length=1, choices=ratings, blank=True)
-    content = models.TextField()
+    content = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name="notes")
     book = models.ForeignKey(to=Book, on_delete=models.CASCADE, related_name="notes")
+
+    def is_owner(self, user):
+        """Return whether the user is the owner."""
+        return self.user == user
 
     class JSONAPIMeta:
         """JSON:API meta information."""
