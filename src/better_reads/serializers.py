@@ -55,7 +55,7 @@ class ShelfbookSerializer(serializers.ModelSerializer):
         model = Shelfbook
         fields = ["id", "shelf", "book", "status"]
 
-    included_serializers = {"shelf": ShelfSerializer, "books": BookSerializer}
+    included_serializers = {"shelf": ShelfSerializer, "book": BookSerializer}
 
     def validate_shelf(self, shelf):
         """Validate the requesting user is the owner of the shelf."""

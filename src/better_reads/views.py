@@ -65,7 +65,7 @@ class ShelfbookView(views.ModelViewSet):
 
     queryset = Shelfbook.objects.all()
     serializer_class = ShelfbookSerializer
-    permission_classes = [permissions.IsAuthenticated, IsObjectOwner]
+    permissions_classes = [permissions.DjangoModelPermissionsOrAnonReadOnly]
     search_fields = ["shelf__name", "book__title"]
     filterset_fields = ["shelf", "book", "shelf__user"]
 
@@ -74,7 +74,7 @@ class ShelfbookView(views.ModelViewSet):
         return (
             super()
             .get_queryset()
-            .filter(Q(shelf__public=True) | Q(shelf__user=self.request.user))
+            .filter(Q(shelf__public=True) | Q(shelf__user=self.request.user.id))
         )
 
 
