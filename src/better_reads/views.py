@@ -38,6 +38,7 @@ class CategoryView(views.ModelViewSet):
     serializer_class = CategorySerializer
     permission_classes = [permissions.DjangoModelPermissionsOrAnonReadOnly]
     search_fields = ["name"]
+    filterset_fields = ["name"]
 
 
 class ShelfView(views.ModelViewSet):
