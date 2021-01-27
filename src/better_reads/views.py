@@ -1,10 +1,13 @@
 """Views for the better_reads app."""
 from django.db.models import Q
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
 from rest_framework_json_api import views
 
 from .models import Book, Category, Review, Shelf, Shelfbook
 from .serializers import (
+    BookCoverSerializer,
     BookSerializer,
     CategorySerializer,
     ReviewSerializer,
@@ -14,7 +17,7 @@ from .serializers import (
 
 
 class IsObjectOwner(permissions.BasePermission):
-    """Custom permission to detect object owner."""
+    """Custom permission - object owner."""
 
     def has_object_permission(self, request, view, obj):
         """Detect object owner."""
@@ -26,9 +29,28 @@ class BookView(views.ModelViewSet):
 
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.DjangoModelPermissionsOrAnonReadOnly]
     search_fields = ["title", "author", "category__name"]
     filterset_fields = ["category"]
+
+    @action(methods=["patch"], detail=True)
+    def cover(self, request, *args, **kwargs):
+        """Set book cover."""
+        instance = self.get_object()
+        original_image = instance.cover
+        serializer = BookCoverSerializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        if original_image:
+            original_image.delete(save=False)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def get_permissions(self):
+        """Define permission upon actions."""
+        if self.action != "list" and self.action != "retrieve":
+            permission_classes = [permissions.IsAdminUser]
+        else:
+            permission_classes = [permissions.DjangoModelPermissionsOrAnonReadOnly]
+        return [permission() for permission in permission_classes]
 
 
 class CategoryView(views.ModelViewSet):
@@ -89,7 +111,11 @@ class ReviewView(views.ModelViewSet):
 
     def get_permissions(self):
         """Define permission upon actions."""
-        if self.action == "list" or self.action == "retrieve":
+        if (
+            self.action == "list"
+            or self.action == "create"
+            or self.action == "retrieve"
+        ):
             permission_classes = [permissions.IsAuthenticated]
         else:
             permission_classes = [IsObjectOwner]

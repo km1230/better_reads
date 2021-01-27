@@ -31,7 +31,7 @@ class Book(models.Model):
         to=Category, on_delete=models.CASCADE, related_name="books"
     )
     description = models.CharField(max_length=200, blank=True)
-    cover = models.ImageField(blank=True)
+    cover = models.ImageField(null=True, upload_to="book_covers/")
 
     def __str__(self):
         """Show book title."""

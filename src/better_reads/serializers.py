@@ -28,6 +28,16 @@ class BookSerializer(serializers.ModelSerializer):
     included_serializers = {"category": CategorySerializer}
 
 
+class BookCoverSerializer(serializers.ModelSerializer):
+    """Serializer for uploading book cover."""
+
+    class Meta:
+        """Serializer meta information."""
+
+        model = Book
+        fields = ["cover"]
+
+
 class ShelfSerializer(serializers.ModelSerializer):
     """Shelf serializer."""
 
