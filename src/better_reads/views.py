@@ -30,7 +30,7 @@ class BookView(views.ModelViewSet):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     search_fields = ["title", "author", "category__name"]
-    filterset_fields = ["category"]
+    filterset_fields = ["category", "category__name", "title", "author"]
 
     @action(methods=["patch"], detail=True)
     def cover(self, request, *args, **kwargs):
